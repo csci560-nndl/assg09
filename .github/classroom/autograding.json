@@ -1,0 +1,54 @@
+{
+  "tests": [
+    {
+      "name": "Show python versions",
+      "setup": "",
+      "run": "python src/python_versions.py",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 10,
+      "points": 0
+    },
+    {
+      "name": "Test Assignment Notebook runs all cells cleanly",
+      "setup": "",
+      "run": "cd notebooks; jupyter nbconvert --execute Assg-09-Jazz-Improvisation-using-Generative-Deep-Network.ipynb --to notebook",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 10,
+      "points": 10
+    },
+    {
+      "name": "Task 1 test gru_music_generator_model",
+      "setup": "",
+      "run": "PYTHONPATH=$(pwd)/src python -m unittest test_assg_tasks.test_gru_music_generator_model",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 10,
+      "points": 20
+    },
+    {
+      "name": "Task 2 test generate_jazz_solo",
+      "setup": "",
+      "run": "PYTHONPATH=$(pwd)/src python -m unittest test_assg_tasks.test_generate_jazz_solo",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 10,
+      "points": 20
+    },
+    {
+      "name": "Task 3 test transformer_music_generator_model",
+      "setup": "",
+      "run": "PYTHONPATH=$(pwd)/src python -m unittest test_assg_tasks.test_transformer_music_generator_model",
+      "input": "",
+      "output": "",
+      "comparison": "included",
+      "timeout": 10,
+      "points": 20
+    }
+  ]
+}
