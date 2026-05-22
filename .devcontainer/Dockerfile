@@ -1,4 +1,4 @@
-FROM continuumio/anaconda3 as upstream
+FROM continuumio/anaconda3 AS upstream
 
 # Verify OS version is expected one
 RUN . /etc/os-release && if [ "${VERSION_CODENAME}" != "bookworm" ]; then exit 1; fi
@@ -25,10 +25,11 @@ RUN chmod =2775 /opt/conda
 USER root
 
 # Setup conda to mirror contents from https://github.com/ContinuumIO/docker-images/blob/master/anaconda3/debian/Dockerfile
+ARG CONTAINER_WORKSPACE_FOLDER
 ENV LANG=C.UTF-8 \
     LC_ALL=C.UTF-8 \
     PATH=/opt/conda/bin:$PATH \
-    PYTHONPATH=$PYTHONPATH:/workspaces/assg09/src
+    PYTHONPATH=${CONTAINER_WORKSPACE_FOLDER}/src
 ARG USERNAME=vscode
 RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     && apt-get install -y --no-install-recommends \
@@ -54,20 +55,29 @@ RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
     && ln -s /opt/conda/etc/profile.d/conda.sh /etc/profile.d/conda.sh \
     && echo ". /opt/conda/etc/profile.d/conda.sh" >> ~/.bashrc \
     && echo "conda activate base" >> ~/.bashrc \
-    && apt-get clean -y && rm -rf /var/lib/apt/lists/* /tmp/library-scripts/add-notice.sh
+    && apt-get clean -y && rm -rf /var/lib/apt/lists/*
 
-# Copy environment.yml (if found) to a temp location so we can update the environment. Also
-# copy "noop.txt" so the COPY instruction does not fail if no environment.yml exists.
-# COPY environment.yml* .devcontainer/noop.txt /tmp/conda-tmp/
-COPY environment.yml* .devcontainer/noop.txt /tmp/conda-tmp/
+# Copy environment.yml (if found) to a temp location so we can update the environment. 
+COPY environment.yml* /tmp/conda-tmp/
 RUN if [ -f "/tmp/conda-tmp/environment.yml" ]; then umask 0002 && /opt/conda/bin/conda env update -n base -f /tmp/conda-tmp/environment.yml; fi \
     && rm -rf /tmp/conda-tmp
 
-# Tensorflow doesn't install currently from conda, need to do a separate pip install
-RUN python3 -m pip install tensorflow
-RUN python3 -m pip install keras_hub
-#RUN python3 -m pip install 'tensorflow[and-cuda]'
+# ensure group members can do conda commands in the /opt/conda directory structure
+# NOTE: this takes a long time to do, so left out of setup.  Need to run to make sure all files in /opt/conda in in conda group if you
+# need to install or manage conda packages from the vscode user
+#RUN chmod -R g+rw /opt/conda
+#RUN chown -R root:conda /opt/conda
+#RUN find /opt/conda -group root -print | xargs chown root:conda
 
-# [Optional] Uncomment this section to install additional OS packages.
-# RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
-#     && apt-get -y install --no-install-recommends <your-package-list-here>
+# Enable contrib component in debian apt sources so we can install nvtop
+# and other packages
+RUN sed -i 's/Components: main/Components: main contrib/g' /etc/apt/sources.list.d/debian.sources
+
+# Uncomment this section to install additional OS packages.
+RUN apt-get update && export DEBIAN_FRONTEND=noninteractive \
+    && apt-get -y install --no-install-recommends nvtop
+
+# initialize conda for the regular user
+USER vscode
+
+RUN conda init

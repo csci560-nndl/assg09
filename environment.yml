@@ -12,8 +12,13 @@ dependencies:
 - statsmodels
 - jupyter
 - jupyterlab
-- twisted
 - pydot
 - music21=6.7.1
 - mido
 - pydub
+- pip
+- pip:
+  - tensorflow # if no gpu
+  - tensorboard
+  - keras_hub
+#  - tensorflow[and-cuda] # if want gpu support

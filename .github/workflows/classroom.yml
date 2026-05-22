@@ -20,12 +20,71 @@ jobs:
       run: |
         # $CONDA is an environment variable pointing to the root of the miniconda directory
         echo $CONDA/bin >> $GITHUB_PATH
-    - name: Set pythonpath to get our assignment modules
+    - name: Set PYTHONPATH to see project modules
       run: |
          echo "PYTHONPATH=$GITHUB_WORKSPACE/src" >> $GITHUB_ENV
     - name: Install dependencies
       run: |
         conda env update --file environment.yml --name base
-        python3 -m pip install tensorflow
-        python3 -m pip install keras_hub
-    - uses: education/autograding@v1
+
+    - name: Show Python versions
+      id: show-python-versions
+      uses: etamu-class/autograding-command-grader@v10
+      with:
+        test-name: 'Show Python versions'
+        setup-command: ''
+        command: 'python src/python_versions.py'
+        timeout: '10'
+        max-score: '0'
+
+    - name: Test Assignment Notebook runs all cells cleanly
+      id: test-assignment-notebook
+      uses: etamu-class/autograding-command-grader@v10
+      with:
+        test-name: 'Test Assignment Notebook'
+        working-directory: './notebooks'
+        setup-command: ''
+        command: 'jupyter nbconvert --execute Assg-09-Jazz-Improvisation-using-Generative-Deep-Network.ipynb --to notebook'
+        timeout: '10'
+        max-score: '10'
+
+    - name: Task 1 gru_music_generator_model()
+      id: test-task-1
+      uses: etamu-class/autograding-command-grader@v10
+      with:
+        test-name: 'Task 1 gru_music_generator_model()'
+        setup-command: ''
+        command: 'python -m unittest test_assg_tasks.test_gru_music_generator_model'
+        timeout: '10'
+        max-score: '20'
+
+    - name: Task 2 generate_jazz_solo()
+      id: test-task-2
+      uses: etamu-class/autograding-command-grader@v10
+      with:
+        test-name: 'Task 2 generate_jazz_solo()'
+        setup-command: ''
+        command: 'python -m unittest test_assg_tasks.test_generate_jazz_solo'
+        timeout: '10'
+        max-score: '20'
+
+    - name: Task 3 transformer_music_model()
+      id: test-task-3
+      uses: etamu-class/autograding-command-grader@v10
+      with:
+        test-name: 'Task 3 transformer_music_model()'
+        setup-command: ''
+        command: 'python -m unittest test_assg_tasks.test_transformer_music_generator_model'
+        timeout: '10'
+        max-score: '20'
+
+
+    - name: Autograding Reporter
+      uses: education/autograding-grading-reporter@v1
+      env:
+        TEST-ASSIGNMENT-NOTEBOOK_RESULTS: "${{steps.test-assignment-notebook.outputs.result}}"
+        TEST-TASK-1_RESULTS: "${{steps.test-task-1.outputs.result}}"
+        TEST-TASK-2_RESULTS: "${{steps.test-task-2.outputs.result}}"
+        TEST-TASK-3_RESULTS: "${{steps.test-task-3.outputs.result}}"
+      with:
+        runners: test-assignment-notebook,test-task-1,test-task-2,test-task-3
