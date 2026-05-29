@@ -1,0 +1,21 @@
+wheel==0.40.0
+numpy
+pandas
+matplotlib
+seaborn
+scikit-learn
+music21==6.7.1
+mido
+pydub
+audioop-lts
+ipykernel
+ipywidgets
+jupyter
+jupyterlab
+
+# if you have a gpu, comment out tensorflow and uncomment the version with cuda,
+# and also enable gpu passthrough in your container
+tensorflow # comment out and uncomment next line to enable cuda / gpu support
+#tensorflow[and-cuda] # uncomment and enable gpu passthrough if you have a gpu
+
+keras_hub

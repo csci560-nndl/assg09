@@ -1,27 +1,25 @@
 {
+	"name": "Class Python / Jupyter Work Environment",
 	"build": {
-		"dockerfile": "./Dockerfile",
-		"context": "..",
+		"dockerfile": "Dockerfile",
+		"context": ".",
         "args": {
-            "CONTAINER_WORKSPACE_FOLDER": "${containerWorkspaceFolder}"
+			"PYTHON_ENV" : "base",
+            "CONTAINER_WORKSPACE_FOLDER": "${containerWorkspaceFolder}",
+			"USERNAME": "student"
+			//"USERNAME": "${env:USER}"
         }
 	},
-	"features": {
-        "ghcr.io/devcontainers/features/node:1": {
-            "version": "none"
-        },
-		"ghcr.io/devcontainers/features/git:1": {
-            "version": "latest",
-            "ppa": "false"
-        }
-    },
 	// Configure tool-specific properties.
 	"customizations": {
 		// Configure properties specific to VS Code.
 		"vscode": {
 			// Set *default* container specific settings.json values on container create.
+			// NOTE: the python environment needs to match the PYTHON_ENV passed into the Dockerfile that will be
+			// the name of the venv that is created and setup by the build			
 			"settings": {
-				"python.defaultInterpreterPath": "/opt/conda/bin/python"
+				"python.defaultInterpreterPath": "/opt/base/bin/python3",
+				"python.selectInterpreter": "/opt/base/bin/python3"				
 			},
 			// Add the IDs of extensions you want installed when the container is created.
 			"extensions": [
@@ -54,12 +52,12 @@
 	// Setting the tensorflow variables TF_* here should make them available in environment, and available when jupyter
 	// lab server is run
 	"remoteEnv": {
-		"LD_LIBRARY_PATH": "/opt/conda/lib/python3.12/site-packages/nvidia/cublas/lib:/opt/conda/lib/python3.12/site-packages/nvidia/cuda_cupti/lib:/opt/conda/lib/python3.12/site-packages/nvidia/cuda_nvcc/nvvm/lib64:/opt/conda/lib/python3.12/site-packages/nvidia/cuda_nvrtc/lib:/opt/conda/lib/python3.12/site-packages/nvidia/cuda_runtime/lib:/opt/conda/lib/python3.12/site-packages/nvidia/cudnn/lib:/opt/conda/lib/python3.12/site-packages/nvidia/cufft/lib:/opt/conda/lib/python3.12/site-packages/nvidia/curand/lib:/opt/conda/lib/python3.12/site-packages/nvidia/cusolver/lib:/opt/conda/lib/python3.12/site-packages/nvidia/cusparse/lib:/opt/conda/lib/python3.12/site-packages/nvidia/nccl/lib:/opt/conda/lib/python3.12/site-packages/nvidia/nvjitlink/lib",
 		"TF_CPP_MIN_LOG_LEVEL": "3",  // usually tensorflow warning messages are not useful unless having tf/GPU configuration issues, this turns them off
 		"TF_ENABLE_ONEDNN_OPTS": "0"  // This turns off ONEDNN, which was throwing lots of annoying warnings if not disabled currently
 	},
-	"postStartCommand": "nohup bash -c 'jupyter lab --ip=0.0.0.0 --port=8888 --allow-root --NotebookApp.token=`` --NotebookApp.password=`` ' > nohup.out",
+	"postStartCommand": "nohup bash -c 'jupyter lab --ip=0.0.0.0 --port=8888 --allow-root --NotebookApp.token=`` --NotebookApp.password=`` ' > nohup.out 2>&1",
 
 	// Set `remoteUser` to `root` to connect as root instead. More info: https://aka.ms/vscode-remote/containers/non-root.
-	"remoteUser": "vscode"
+	"remoteUser": "student"
+	//"remoteUser": "${env:USER}"
 }

@@ -11,21 +11,20 @@ jobs:
       max-parallel: 5
 
     steps:
-    - uses: actions/checkout@v4
-    - name: Set up Python 3.12
-      uses: actions/setup-python@v3
+    - uses: actions/checkout@v6
+    - name: Set up Python 3.13
+      uses: actions/setup-python@v6
       with:
-        python-version: '3.12'
-    - name: Add conda to system path
-      run: |
-        # $CONDA is an environment variable pointing to the root of the miniconda directory
-        echo $CONDA/bin >> $GITHUB_PATH
+        python-version: '3.13'
     - name: Set PYTHONPATH to see project modules
       run: |
          echo "PYTHONPATH=$GITHUB_WORKSPACE/src" >> $GITHUB_ENV
     - name: Install dependencies
       run: |
-        conda env update --file environment.yml --name base
+        pip3 install -q -r .devcontainer/requirements.txt
+    - name: Force Javascript 24
+      run: |
+         echo "FORCE_JAVASCRIPT_ACTIONS_TO_NODE24=true" >> $GITHUB_ENV
 
     - name: Show Python versions
       id: show-python-versions

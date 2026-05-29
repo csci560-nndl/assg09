@@ -6,7 +6,7 @@ date: ''
 
 # Description
 
-Welcome to our programming assingment on doing generative AI using neural networks.  In this
+Welcome to our programming assignment on doing generative AI using neural networks.  In this
 notebook, you will implement a model that uses an LSTM recurrent layer to generate music.  At the end,
 you'll be able to listen to the Jazz solos that your networks generates.
 
