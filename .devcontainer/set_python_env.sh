@@ -58,6 +58,7 @@ EOF
 
 # install all required packages into virtual environment specified in requirements.txt
 source /opt/$PYTHON_ENV/bin/activate
+pip3 install --upgrade pip
 pip3 install -q -r ./requirements/requirements.txt
 
 # NOTE: official Tensorflow pip install instructions: https://tensorflow.org/install/pip

@@ -8,6 +8,7 @@ music21==6.7.1
 mido
 pydub
 audioop-lts
+pydot
 ipykernel
 ipywidgets
 jupyter
